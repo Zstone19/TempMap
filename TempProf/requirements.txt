@@ -1,0 +1,8 @@
+astropy
+numpy
+numba
+scipy
+matplotlib
+tqdm
+numba_progress
+awkward
