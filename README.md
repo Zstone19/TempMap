@@ -3,7 +3,7 @@ A package following Stone et al. (2022) in using the method described in Neustad
 
 The repository is organized as follows:
 * `/temp_map` - The python package
-* `/Examples` - Example Jupyter notebooks detailing two use cases for the package (one with simulated data and one with real data)
+* `/Examples` - Example Jupyter notebooks detailing two use cases for the package (for both simulated and real data)
 * `/Paper` - Results from Stone et al. (2022), including GIFs of fit spectra, AGN parameters, and output temperature maps
 
 ## The Algorithm
