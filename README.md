@@ -13,6 +13,8 @@ To produce output temperature perturbation maps, one needs to use multi-waveleng
 
 The algorithm can output a temperature map for an arbitrary number of specified "smoothing" parameters $\xi$:
 
+![](./Examples/ExampleTempMap.png)
+
 and also show the quality of the fit to the data with an animated GIF:
 
 ![Alt Text](./Paper/Fig4_Spectra_GIFs/outgo.gif)
