@@ -17,4 +17,4 @@ The algorithm can output a temperature map for an arbitrary number of specified 
 
 and also show the quality of the fit to the data with an animated GIF:
 
-![Alt Text](./Paper/Fig4_Spectra_GIFs/outgo.gif)
+![Alt Text](./Paper/Fig2_Spectra_GIFs/ingo.gif)
