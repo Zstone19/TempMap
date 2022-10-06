@@ -19,4 +19,4 @@ and also show the quality of the fit to the data with an animated GIF:
 
 ![Alt Text](./Paper/Fig2_Spectra_GIFs/ingo.gif)
 
-For any questions or comments, reach out to [stone28@illinois.edu](mailto:stone28@illinois.edu) 
+For any questions or comments, reach out to [Zachary Stone](mailto:stone28@illinois.edu) or [Yue Shen](mailto:shenyue@illinois.edu)
