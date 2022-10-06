@@ -103,7 +103,7 @@ def get_filter_kernels(lambda_vals, obj_dict, frame='rest', plot=True, fname=Non
 
 
 
-    for wl in tqdm(lam_loop):
+    for wl in lam_loop:
         out_vals = filter_loop(wl, T0_init, uvals, dy)
         peak_y = yvals[ np.argmax( out_vals ) ]
 
@@ -208,7 +208,7 @@ def chunk_fill(row_snap, col_snap, dat_snap, shape, Nchunk=1e5):
     
     #row_snap, col_snap, dat_snap are snapshots of the csr data Awkward arrays
     
-    for n in tqdm( range( len(row_snap)//Nchunk ) ):
+    for n in range( len(row_snap)//Nchunk ):
 
         row_dat = extract_indices( row_snap, n*Nchunk, (n+1)*Nchunk )
         col_dat = extract_indices( col_snap, n*Nchunk, (n+1)*Nchunk )

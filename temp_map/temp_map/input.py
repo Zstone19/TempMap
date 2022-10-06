@@ -92,3 +92,121 @@ def make_ingo(tp_vals, yvals, vlog, P, offset=0):
         dToT_input[i,:] = .1*np.sin( omega*( tp_vals*24*60*60 - yvals[i]/velocities[i] ) + offset )
 
     return dToT_input
+
+
+def make_in_and_out(tp_vals, yvals, MBH, vout, vin, Aout, Ain, 
+                    Pout, Pin, offset):
+    
+    dToT_input = (Aout/(Aout+Ain))*make_outgo(yvals, tp_vals, MBH, P=Pout, v=vout)
+    dToT_input += (Ain/(Aout+Ain))*make_ingo(tp_vals, yvals, vin, Pin, offset)
+    
+    return dToT_input
+
+
+
+def make_bumps(tp_vals, yvals, v, P, offset):
+    from skimage.draw import random_shapes
+    
+    Nu = len(yvals)
+    N_tp = len(tp_vals)
+
+    dToT_input = .5*make_ingo(tp_vals, yvals, v, P, offset)
+
+    shape_arr_tot = np.zeros_like(dToT_input)
+    shape_arr1 = random_shapes( dToT_input.shape, max_shapes=6,
+                               min_shapes=3, allow_overlap=True, 
+                               random_seed=1800, num_channels=1,
+                               intensity_range=(1, 2) )[0][:,:,0]
+
+    for i in range(Nu):
+        for j in range(N_tp):
+            if shape_arr1[i,j] == 255:
+                shape_arr_tot[i,j] = 0
+
+            if shape_arr1[i,j] == 1:
+                shape_arr_tot[i,j] = -1
+            
+            if shape_arr1[i,j] == 2:
+                shape_arr_tot[i,j] = 1
+
+
+    shape_arr2 = random_shapes( dToT_input.shape, max_shapes=6,
+                               min_shapes=3, allow_overlap=True, 
+                               random_seed=18000, num_channels=1,
+                               intensity_range=(1,2) )[0][:,:,0]
+
+    for i in range(Nu):
+        for j in range(N_tp):
+            if shape_arr2[i,j] == 255:
+                shape_arr_tot[i,j] += 0
+            elif shape_arr2[i,j] == 1:
+                shape_arr_tot[i,j] += -1
+            elif shape_arr2[i,j] == 2:
+                shape_arr_tot[i,j] += 1
+
+    dToT_input += .05*shape_arr_tot
+    
+    return dToT_input
+
+
+
+
+
+
+def make_multiple(yvals, tp_vals, params):
+    tot_array = []
+    
+    for param in params:
+        
+        if param['type'] == 'ring_out':
+            v = param['v']
+            pert_min = param['pert_min']
+            pert_max = param['pert_max']
+            
+            dToT_input = make_ring_out(yvals, tp_vals, pert_min, pert_max, v)
+        
+        if param['type'] == 'outgo':
+            v = param['v']
+            P = param['P']
+            phase = param['offset']
+            MBH = param['MBH']
+            
+            dToT_input = make_outgo(yvals, tp_vals, MBH, P=P, v=v, phase=phase)
+            
+            
+        if param['type'] == 'ingo':
+            v = param['v']
+            P = param['P']
+            offset = param['offset']
+            
+            dToT_input = make_ingo(tp_vals, yvals, v, P, offset)
+            
+        
+        if param['type'] == 'in_and_out':
+            Ain = param['Ain']
+            Aout = param['Aout']
+            
+            vin = param['vin']
+            vout = param['vout']
+            
+            Pin = param['Pin']
+            Pout = param['Pout']
+            
+            MBH = param['MBH']
+            offset = param['offset']
+            
+            dToT_input = make_in_and_out(tp_vals, yvals, MBH, vout, vin, Aout, Ain, Pout, Pin, offset)
+            
+            
+        if param['type'] == 'bumps':
+            v = param['v']
+            P = param['P']
+            offset = param['offset']
+            
+            dToT_input = make_bumps(tp_vals, yvals, v, P, offset)
+            
+        tot_array.append( dToT_input )
+        
+    return tot_array
+    
+

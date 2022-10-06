@@ -49,7 +49,9 @@ def get_ticks(tp_vals, interval):
 
 
 def run_tick_loop(tp_vals):
-    intervals = [50, 25, 20, 15]
+    intervals = [50, 25, 20, 15, 10, 5]
+
+    ticks = None
 
     #Add xticks
     for i in range(len(intervals)):
@@ -63,6 +65,10 @@ def run_tick_loop(tp_vals):
             interval = intervals[i-1]
             ticks, tick_labels, Nlabel = get_ticks(tp_vals, interval)
             break
+        
+    if (i == len(intervals) - 1) & (ticks is None):
+        interval = intervals[-1]
+        ticks, tick_labels, Nlabel = get_ticks(tp_vals, interval)
 
     return ticks, tick_labels, Nlabel
 
@@ -126,7 +132,7 @@ def plot_profs_inout(dToT_input, dToT_outputs_reshape, tp_vals, yvals, xi_vals, 
     ax[ax_ind].set_xticklabels(  tick_labels )
 
 
-    for n, dToT_output_reshape in tqdm( enumerate(dToT_outputs_reshape) ):
+    for n, dToT_output_reshape in enumerate(dToT_outputs_reshape):
 
         if Nrow > 1:
             ax_ind = (n//Ncol, n%Ncol +1)
@@ -172,7 +178,7 @@ def plot_profs_inout(dToT_input, dToT_outputs_reshape, tp_vals, yvals, xi_vals, 
         ytxt1 = y1 + (y2-y1)*.1
         ytxt2 = y1 + (y2-y1)*.2
 
-        ax[ax_ind].text( xtxt, ytxt2, r'$\chi^2_\nu$ = {:.3f}'.format(chi2_vals[n]), fontsize=13, color='k' )
+        ax[ax_ind].text( xtxt, ytxt2, r'$\chi^2 / N_d$ = {:.3f}'.format(chi2_vals[n]), fontsize=13, color='k' )
         ax[ax_ind].text( xtxt, ytxt1, 'scale = ' + '{:.3f}'.format( np.percentile( np.abs(dToT_output_reshape), 99) ), fontsize=13, color='k')
         
         ax[ax_ind].set_xticks(ticks)
@@ -292,7 +298,7 @@ def plot_profs_inout_dist(dToT_input, dToT_outputs_reshape, tp_vals, yvals, xi_v
 
     fig, ax = plt.subplots(2, len(arrays), figsize=(4*len(arrays), 7) )
 
-    for i, dToT_output_reshape in tqdm( enumerate(arrays) ):
+    for i, dToT_output_reshape in enumerate(arrays):
 
         vals1 = dToT_output_reshape / np.percentile( np.abs(dToT_output_reshape), percent)
 
@@ -343,7 +349,7 @@ def plot_profs_inout_dist(dToT_input, dToT_outputs_reshape, tp_vals, yvals, xi_v
         ytxt2 = y1 + (y2-y1)*.2
 
         if i != 0:
-            ax[0,i].text( xtxt, ytxt2, r'$\chi^2_\nu$ = {:.3f}'.format(chi2_vals[i-1]), fontsize=13, color='k' )
+            ax[0,i].text( xtxt, ytxt2, r'$\chi^2 / N_d$ = {:.3f}'.format(chi2_vals[i-1]), fontsize=13, color='k' )
 
             
         if  i == 0:
@@ -401,8 +407,6 @@ def plot_profs_inout_dist(dToT_input, dToT_outputs_reshape, tp_vals, yvals, xi_v
 
 
         #Add xticks
-        Nticks = int( (tp_vals[-1] - tp_vals[0])//interval )
-        
         ax[1,i+1].set_xticks(ticks)
         ax[1,i+1].set_xticklabels(  tick_labels )
             
@@ -507,7 +511,7 @@ def plot_profs_out(dToT_outputs_reshape, tp_vals, yvals, xi_vals, chi2_vals, fna
         
     fig, ax = plt.subplots(Nrow, Ncol, figsize=(4.5*Ncol, 3.5*Nrow), sharey=True)
 
-    for i, dToT_output_reshape in tqdm( enumerate(dToT_outputs_reshape) ):
+    for i, dToT_output_reshape in enumerate(dToT_outputs_reshape):
 
         if N/Ncol <= 1:
             ax_ind = i
@@ -552,7 +556,7 @@ def plot_profs_out(dToT_outputs_reshape, tp_vals, yvals, xi_vals, chi2_vals, fna
         ytxt1 = y1 + (y2-y1)*.1
         ytxt2 = y1 + (y2-y1)*.2
         
-        ax[ax_ind].text( xtxt, ytxt2, r'$\chi^2_\nu$ = {:.3f}'.format(chi2_vals[i]), fontsize=13, color='k' )
+        ax[ax_ind].text( xtxt, ytxt2, r'$\chi^2 / N_d$ = {:.3f}'.format(chi2_vals[i]), fontsize=13, color='k' )
         ax[ax_ind].text( xtxt, ytxt1, 'scale = ' + '{:.3f}'.format( np.percentile( np.abs(dToT_output_reshape), percent) ), fontsize=13, color='k')
         
         ax[ax_ind].set_xticks(ticks)
@@ -693,7 +697,7 @@ def animate_spectra_out(fitted_spec, flux_dat, err_dat, mean_spec, td_vals, lamb
             ax.plot(x, spec_out, c=colors[n], lw=.8, zorder=1000 - n, label=r'$\xi$ = {}'.format(xi_vals[n]))
             
             chi2_nu = np.sum( (spec_in - spec_out)**2 / spec_err**2 ) / N_nu
-            ax.text(1.02, .93 - .07*n, r'$\chi^2_{\nu}$ = %.4f' % chi2_nu, transform=ax.transAxes, fontsize=11, color=colors[n] )
+            ax.text(1.02, .93 - .07*n, r'$\chi^2 / N_d$ = %.4f' % chi2_nu, transform=ax.transAxes, fontsize=11, color=colors[n] )
 
             ax.tick_params('both', labelsize=12)
             ax.tick_params('both', which='major', length=8)

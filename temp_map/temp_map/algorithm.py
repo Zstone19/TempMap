@@ -222,7 +222,9 @@ def make_F_dF(input_dat, tp_vals, td_vals, lambda_vals, yvals, MBH, lambda_edd, 
                 
             F[i*N_nu + j] = np.sum( F_vals )   
             dF[i*N_nu + j] = np.sum(dF_vals )
-            progress_hook.update(1)
+            
+            if progress_hook is not None:
+                progress_hook.update(1)
     
     
     return F, dF
@@ -302,7 +304,9 @@ def make_F_dF_nonlinear(input_dat, tp_vals, td_vals, lambda_vals, yvals, MBH, la
                 
             F[i*N_nu + j] = np.sum( F_vals )   
             dF[i*N_nu + j] = np.sum(dF_vals )
-            progress_hook.update(1)
+            
+            if progress_hook is not None:
+                progress_hook.update(1)
     
     
     return F, dF

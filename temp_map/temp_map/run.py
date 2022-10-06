@@ -46,7 +46,7 @@ def fast_res(A, b):
 
 
 def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_vals, 
-                AGN_params, xi_vals, Nchunk=1e6, fps=10,
+                AGN_params, xi_vals, Nchunk=1e6, fps=10, verbose=True,
                 show_tp=True, tp_fname=None, spec_fname=None, dat_fname=None):
 
 
@@ -96,15 +96,22 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     alpha = AGN_params['alpha']
     
     
-    
-    print('Making W matrix...')    
+    if verbose:
+        print('Making W matrix...')   
+     
     row_dat = ak.ArrayBuilder()
     col_dat = ak.ArrayBuilder()
     input_dat = ak.ArrayBuilder()
 
-    with ProgressBar(total=Nu*N_tp*N_nu*N_td) as progress:
+
+    if verbose:
+        with ProgressBar(total=Nu*N_tp*N_nu*N_td) as progress:
+            rows, cols, inputs = make_W_spec_w_mean(row_dat, col_dat, input_dat, yvals, tp_vals, td_vals, lambda_vals,
+                                                    lambda_edd, MBH, dist, inc, alpha=alpha, progress_hook=progress,
+                                                    errs=err_dat, dat_type='dToT', include_F0=True)
+    else:
         rows, cols, inputs = make_W_spec_w_mean(row_dat, col_dat, input_dat, yvals, tp_vals, td_vals, lambda_vals,
-                                                lambda_edd, MBH, dist, inc, alpha=alpha, progress_hook=progress,
+                                                lambda_edd, MBH, dist, inc, alpha=alpha, progress_hook=None,
                                                 errs=err_dat, dat_type='dToT', include_F0=True)
 
     row_snap = rows.snapshot()
@@ -128,10 +135,11 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     WTb = csc_matrix(WTb).transpose()
     
     
-    
-    print('Inverting...')    
+    if verbose:
+        print('Inverting...')  
+      
     inv_outputs = []
-    for xi in tqdm(xi_vals):
+    for xi in xi_vals:
         A = csc_matrix( WTW + xi*(I + Dk + Dl) )
 
         res = fast_res(A.todense(), WTb.todense())
@@ -199,7 +207,6 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
             sxy = np.sum(lc_out*lc_in / lc_err**2)
             sx2 = np.sum(lc_out**2 / lc_err**2)
             sx = np.sum(lc_out / lc_err**2)
-            sy = np.sum(lc_in / lc_err**2)
 
             m_coefs[i,j] = (sxy - offsets[i][j]*sx)/sx2    
     
@@ -246,7 +253,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
         plot_profs_out(dToT_outputs_reshape, tp_vals, 
                                 yvals, xi_vals, chi2_tot, 
                                 fname=tp_fname,
-                                show=show_tp, cmap_num=16, interval=50, 
+                                show=show_tp, cmap_num=16,
                                 percent=99, date_type='rest', Ncol= min( len(xi_vals), 5 ),
                                 interpolation='gaussian')
     
@@ -254,8 +261,11 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     
     #Animate output spectra
     if spec_fname is not None:
-        print('Animating spectra...')
-        animate_spectra_out(fitted_spec*1e-17/1e-8, flux_reshape, err_reshape, 
+        
+        if verbose:
+            print('Animating spectra...')
+        
+        animate_spectra_out(fitted_spec, flux_reshape, err_reshape, 
                                 mean_flux, td_vals, lambda_vals, 
                                 xi_vals, spec_fname, fps=fps)
         
@@ -282,7 +292,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
 
 
 def run_spectra_sim(dToT_input, tp_vals, yvals, td_vals, lambda_vals, AGN_params, xi_vals, 
-                    err_mean=.03, err_std=.005, Nchunk=1e6, fps=10,
+                    err_mean=.03, err_std=.005, Nchunk=1e6, fps=10, verbose=True,
                     tp_fname=None, spec_fname=None, dat_fname=None, show_tp=True):
     
     Nu = len(yvals)
@@ -304,26 +314,43 @@ def run_spectra_sim(dToT_input, tp_vals, yvals, td_vals, lambda_vals, AGN_params
     alpha = AGN_params['alpha']
     
     #Make spectra
-    print('Making spectra...')
-    with ProgressBar(total=Nu*N_tp*N_nu*N_td) as progress:
+    if verbose:
+        print('Making spectra...')
+        with ProgressBar(total=Nu*N_tp*N_nu*N_td) as progress:
+            input_spec, _ = make_F_dF_nonlinear(dToT_input, tp_vals, td_vals, lambda_vals, yvals, 
+                                            MBH, 
+                                            lambda_edd, 
+                                            dist, inc, progress, alpha=alpha,
+                                            include_F0=True, dat_type='dToT')
+    else:
         input_spec, _ = make_F_dF_nonlinear(dToT_input, tp_vals, td_vals, lambda_vals, yvals, 
                                         MBH, 
                                         lambda_edd, 
-                                        dist, inc, progress, alpha=alpha,
+                                        dist, inc, None, alpha=alpha,
                                         include_F0=True, dat_type='dToT')
+        
     
     
     #Get steady-state
-    print('Getting steady-state...')
-    with ProgressBar(total=Nu*N_tp*N_nu*N_td) as progress:
+    if verbose:
+        print('Getting steady-state...')
+        with ProgressBar(total=Nu*N_tp*N_nu*N_td) as progress:
+            F_input, dF_input = make_F_dF(dToT_input, tp_vals, td_vals, 
+                                            lambda_vals, yvals, 
+                                            MBH, 
+                                            lambda_edd, 
+                                            dist, 
+                                            inc, progress, alpha=alpha,
+                                            dat_type='dToT', include_F0=True)
+    else:
         F_input, dF_input = make_F_dF(dToT_input, tp_vals, td_vals, 
                                         lambda_vals, yvals, 
                                         MBH, 
                                         lambda_edd, 
                                         dist, 
-                                        inc, progress, alpha=alpha,
+                                        inc, None, alpha=alpha,
                                         dat_type='dToT', include_F0=True)
-        
+    
 
     #Add error      
     input_err = np.random.normal( F_input*err_mean, F_input*err_std )
@@ -348,7 +375,8 @@ def run_spectra_sim(dToT_input, tp_vals, yvals, td_vals, lambda_vals, AGN_params
     
     output = run_spectra(processed_input_spec, input_err, mean_flux, 
                          tp_vals, yvals, td_vals, lambda_vals, 
-                         AGN_params, xi_vals, Nchunk=Nchunk, show_tp=False)
+                         AGN_params, xi_vals, verbose=verbose, 
+                         Nchunk=Nchunk, show_tp=False)
     
     output['input'] = dToT_input
     
@@ -365,11 +393,14 @@ def run_spectra_sim(dToT_input, tp_vals, yvals, td_vals, lambda_vals, AGN_params
     plot_profs_inout_dist(dToT_input, dToT_outputs_reshape, 
                                  tp_vals, yvals, xi_vals, chi2_tot,
                                  fname=tp_fname, show=show_tp, cmap_num=16,
-                                 interval=50, interpolation='gaussian')
+                                 interpolation='gaussian')
     
     #Animate spectra
     if spec_fname is not None:
-        print('Animating spectra...')
+        
+        if verbose:
+            print('Animating spectra...')
+
         animate_spectra_out(fitted_spec, flux_reshape, err_reshape, 
                                 mean_flux, td_vals, lambda_vals, 
                                 xi_vals, spec_fname, fps=fps)
