@@ -49,9 +49,7 @@ def get_ticks(tp_vals, interval):
 
 
 def run_tick_loop(tp_vals):
-    intervals = [50, 25, 20, 15, 10, 5]
-
-    ticks = None
+    intervals = [100, 50, 25, 20, 15, 10, 5]
 
     #Add xticks
     for i in range(len(intervals)):
@@ -712,12 +710,140 @@ def animate_spectra_out(fitted_spec, flux_dat, err_dat, mean_spec, td_vals, lamb
             if n == 0:
                 ax.text(.1, .9, r'$t_d =$ ' + '%.1f' % td_vals[i], transform=ax.transAxes, fontsize=14)
 
-            ax.legend(loc='upper right')
+            ax.legend(loc='upper right').set_zorder(1001)
         
 
     anim = animation.FuncAnimation(fig, animate,
                                    frames=N_td, interval=20, repeat_delay=10)
 
-    anim.save(fname, fps=fps)
+    anim.save(fname, writer='ffmpeg', fps=fps)
+    
+    return
+
+
+
+
+def animate_arbitrary_data(lengths, fitted_dat, flux_dat, err_dat, mean_dat, 
+                           td_vals, lambda_vals, xi_vals, fname, 
+                           dat_type='spec', fps=10):
+
+    #Lambda must be in units of cm
+    colors = ['r', 'green', 'orange', 'c', 'b', 'lime']
+
+    N_td = len(td_vals)
+    N_nu = len(lambda_vals)
+    N = len(xi_vals)
+    
+    assert np.sum(lengths).astype(int) == len(td_vals) == len(lambda_vals)
+
+    flux_dat_rel = np.zeros_like(flux_dat)
+    err_dat_rel = np.zeros_like(err_dat)
+    
+    if dat_type == 'spec':
+        td_unique = np.unique(td_vals)
+        sort_ind = np.argsort(td_unique)
+        
+        for i in range(len(td_unique)):
+            ind1 = np.sum(lengths[:i]).astype(int)
+            ind2 = ind1 + lengths[i]
+            
+            flux_dat_rel[ind1:ind2] = flux_dat[ind1:ind2]/mean_dat
+            err_dat_rel[ind1:ind2] = err_dat[ind1:ind2]/mean_dat
+        
+        ymax = np.max(flux_dat_rel + err_dat_rel)
+        ymin = np.min(flux_dat_rel - err_dat_rel)
+        
+        xmin = np.min(lambda_vals)/1e-8 - 20
+        xmax = np.max(lambda_vals)/1e-8 + 20
+        
+        ms = 1
+        ewidth = .05
+        e_alpha = .2
+
+
+
+    if dat_type == 'lc':
+        lambda_unique = np.array( np.unique(lambda_vals) )
+        sort_ind = np.argsort(lambda_unique)
+        
+        ymin = None
+        ymax = None
+        
+        xmin = np.min(td_vals) - 10
+        xmax = np.max(td_vals) + 10
+        
+        ms = 2
+        ewidth = .1
+        e_alpha = .5
+
+
+    fig, ax = plt.subplots(constrained_layout=True)
+
+    def animate(j):
+        i = sort_ind[j]
+
+        ind1 = np.sum(lengths[:i]).astype(int)
+        ind2 = ind1 + lengths[i]
+
+        if dat_type == 'spec':
+            x = lambda_vals[ind1:ind2]/1e-8
+            ybar = mean_dat
+            
+        if dat_type == 'lc':
+            x = td_vals[ind1:ind2]
+            ybar = mean_dat[i]
+
+        y_in = flux_dat[ind1:ind2]/ybar
+        y_err = err_dat[ind1:ind2]/ybar
+
+        ax.cla()
+
+        for n in range(N):
+            y_out = fitted_dat[n, ind1:ind2]/ybar
+
+            _, _, bars = ax.errorbar(x, y_in, y_err, fmt='.k', markersize=ms, elinewidth=ewidth)
+            [bar.set_alpha(e_alpha) for bar in bars]
+
+
+            ax.plot(x, y_out, c=colors[n], lw=.8, zorder=1000 - n, label=r'$\xi$ = {}'.format(xi_vals[n]))
+            
+            chi2_nu = np.sum( (y_in - y_out)**2 / y_err**2 ) / len(y_in)
+            ax.text(1.02, .93 - .07*n, r'$\chi^2 / N_d$ = %.4f' % chi2_nu, transform=ax.transAxes, fontsize=11, color=colors[n] )
+
+            ax.set_ylim(ymin, ymax)
+            ax.set_xlim(xmin, xmax)
+            
+            
+            if dat_type == 'lc':
+                y1, y2 = ax.get_ylim()
+                ax.set_ylim( y1*1.1, y2*1.1 )
+
+            if n == 0:
+                ax.set_ylabel(r'$\delta F_\lambda / \overline{F_\lambda}$', fontsize=11)
+
+            if n == 0:
+                if dat_type == 'spec':
+                    ax.text(.1, .9, r'$t_d =$ ' + '%.1f' % td_unique[i], transform=ax.transAxes, fontsize=14)
+                if dat_type == 'lc':
+                    ax.text(.1, .9, r'$\lambda_{\rm rest} =$ ' + '{:.1f}'.format(lambda_unique[i]/1e-8) + r' $\AA$', transform=ax.transAxes, fontsize=14)
+
+
+            ax.legend(loc='upper right').set_zorder(1001)
+
+        ax.tick_params('both', labelsize=12)
+        ax.tick_params('both', which='major', length=8)
+        ax.tick_params('both', which='minor', length=3)
+        
+        if dat_type == 'spec':
+            ax.set_xlabel(r'Rest-Frame Wavelength [$\AA$]', fontsize=15)
+        if dat_type == 'lc':
+            ax.set_xlabel(r'Rest-Frame Time [d]', fontsize=15)
+
+        
+
+    anim = animation.FuncAnimation(fig, animate,
+                                   frames=len(lc_lengths), interval=20, repeat_delay=10)
+
+    anim.save(fname, writer='ffmpeg', fps=fps)
     
     return

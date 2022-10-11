@@ -73,6 +73,8 @@ def divsum(arr):
 
 
 #############################################################################################
+#                              For Spectra
+#############################################################################################
 
 #The first index of W is : [nu0t0, nu1t0, nu2t0, ...]
 #The second index of W is: [u0t0, u1t0, u2t0, ....]
@@ -312,6 +314,174 @@ def make_F_dF_nonlinear(input_dat, tp_vals, td_vals, lambda_vals, yvals, MBH, la
     return F, dF
 
 
+#############################################################################################
+#                               For Arbitrarily Sampled Data
+#############################################################################################
+
+@njit(nogil=True)    
+def make_W_arbitrary(row_dat, col_dat, input_dat, yvals, tp_vals, td_vals, lambda_vals, 
+              lambda_edd, MBH, dist, inc, alpha, progress_hook, errs=None, dat_type='dToT', include_F0=True,
+              c=const.c.cgs.value, h=const.h.cgs.value, kB=const.k_B.cgs.value):
+
+    #td_vals is an array of the observed times for each data point
+    #lambda_vals is an array of the form [ lambda0, lambda0, lambda0, lambda0, ...., lambda0, lambda1, lambda1, lambda1, ... ]
+    #The wavelengths are linked to each light curve data point
+    
+    assert len(lambda_vals) == len(td_vals)
+    
+    Nu = len(yvals)
+    N_tp = len(tp_vals)
+    N_td = len(td_vals)
+
+    dy = yvals[1] - yvals[0]
+    dtp = tp_vals[1] - tp_vals[0]
+    
+    Rin = get_Rin(MBH, alpha)
+    T0_init = get_temperature_profile(yvals, MBH, lambda_edd, alpha)
+        
+    if errs is None:
+        errs = np.ones(N_td)
+
+    for i, (td, wl) in enumerate(zip(td_vals, lambda_vals)):
+        for j in range(Nu):
+            t0 = (10**yvals[j]) * Rin * np.sin(inc) / c /60/60/24
+
+            td_full = np.full_like(tp_vals, td)
+            t0_full = np.full_like(tp_vals, t0)
+            dt_full = np.full_like(tp_vals, dtp)
+            
+            t1 = np.array( list(map(get_t1, tp_vals, td_full, t0_full, dt_full)) )
+            t2 = np.array( list(map(get_t2, tp_vals, td_full, t0_full)) )                
+            t3 = np.array( list(map(get_t3, tp_vals, td_full, t0_full)) )    
+            t4 = np.array( list(map(get_t4, tp_vals, td_full, t0_full, dt_full)) )
+
+            term1 = np.array( list(map(G1, t0_full, t1, t2, dt_full)) )
+            term2 = (td - tp_vals + dtp)*np.array( list(map(G2, t0_full, t1, t2)) )/dtp
+            term3 = np.array( list(map(G1, t0_full, t3, t4, dt_full)) )
+            term4 = (-td + tp_vals + dtp)*np.array( list(map(G2, t0_full, t3, t4)) )/dtp 
+
+            Flux_vals = divsum(term1 + term2 + term3 + term4)
+            good_ind = np.argwhere( Flux_vals != 0. ).T[0] 
+                    
+                    
+            for k in good_ind:
+                F0 = get_F0(alpha, MBH, wl, dist, inc)
+            
+                xval = h*c/wl/ T0_init[j] / kB
+                xterm =  xval / ( np.exp(xval) + np.exp(-xval) - 2 )
+                integrand = xterm * 10**(2*yvals[j]) * np.log(10) * dy
+
+                if dat_type == 'dT':
+                    integrand /= T0_init[j]
+                if include_F0:
+                    integrand *= F0
+
+                row_dat.integer( int(i) )
+                col_dat.integer( int(k*Nu + j) )
+                input_dat.real( integrand * Flux_vals[k] / errs[i] )
+
+                if progress_hook is not None:
+                    progress_hook.update(1)
+        
+        
+    unique_lambda_vals = np.unique(lambda_vals)
+
+    for j in range(len(unique_lambda_vals)):
+        td_ind = np.argwhere(lambda_vals == unique_lambda_vals[j]).T[0]
+
+        for ind in td_ind:
+            row_dat.integer(ind)
+            col_dat.integer(Nu*N_tp + j)
+            input_dat.real( 1. / errs[ind] )
+
+    return row_dat, col_dat, input_dat
+
+
+
+
+@njit(nogil=True)
+def make_F_dF_nonlinear_arbitrary(input_dat, tp_vals, td_vals, lambda_vals, 
+                                  yvals, MBH, lambda_edd, dist, inc, 
+                                  progress_hook, alpha=6,
+                                  h=const.h.cgs.value, c=const.c.cgs.value, kB=const.k_B.cgs.value, 
+                                  include_F0=True, dat_type='dToT',
+                                  max_float=sys.float_info.max, min_float=sys.float_info.min):
+    
+    N_tp = len(tp_vals)
+    N_td = len(td_vals)
+    Nu = len(yvals)
+    
+    dy = yvals[1] - yvals[0]
+    uvals = 10**yvals
+    
+    dF = np.zeros(N_td)
+    F = np.zeros(N_td)
+    
+    T0_init = get_temperature_profile(yvals, MBH, lambda_edd, alpha)
+    
+    for i in range(N_td):
+        
+        td_ind = np.argmin( np.abs(td_vals[i] - tp_vals) )
+
+        if dat_type == 'dToT':
+            Tvals = T0_init + input_dat[:,td_ind]*T0_init
+            dT = input_dat[:,td_ind]*T0_init
+        if dat_type == 'dT':
+            Tvals = T0_init + input_dat[:,td_ind]
+            dT = input_dat[:,td_ind]
+            
+        F0 = get_F0(alpha, MBH, lambda_vals[j], dist, inc)
+        
+        F_vals = np.zeros(Nu)
+        dF_vals = np.zeros(Nu)
+        for k in range(Nu):
+            xval = h*c/lambda_vals[i] / Tvals[k] / kB                                         
+
+            if xval > 100:
+                xterm = np.exp( np.log(xval) - xval)
+            else:
+                xterm = xval / ( np.exp(xval) + np.exp(-xval) - 2 )
+                    
+            log_integrand = np.log(xterm) + 2*yvals[k]*np.log(10) + np.log( np.log(10) ) + np.log(dy) - np.log(T0_init[k])
+            if include_F0:
+                log_integrand += np.log(F0) 
+        
+            #If integrand is too large/small, get integrand from max/min float allowed
+            if log_integrand > np.log(max_float) - 10:
+                integrand = np.exp( np.log(max_float) - 10 + 100 )
+            elif log_integrand < np.log(min_float) + 10:
+                integrand = np.exp( np.log(min_float) + 10 + 100 )
+            else:
+                integrand = np.exp(log_integrand)
+    
+            if np.isinf(integrand):
+                integrand = np.sign(integrand) * ( max_float*1e100 / 1e10 )
+            elif np.isfinite(integrand) == False:
+                integrand = 0
+
+            if xval > 250:
+                xterm = np.exp( -xval )
+            else:
+                xterm = 1/( np.exp(xval) - 1 )
+                
+            F_vals[k] = uvals[k]**2 * np.log(10) * xterm * dy
+            if include_F0:
+                F_vals[k] *= F0
+            
+            dF_vals[k] = integrand * dT[k]
+                
+        F[i] = np.sum( F_vals )   
+        dF[i] = np.sum(dF_vals )
+        
+        if progress_hook is not None:
+            progress_hook.update(1)
+    
+    
+    return F, dF
+
+#############################################################################################
+#                             Making Smoothing Matrices
+#############################################################################################
 
 @njit
 def fill_smoothing_matrices(Nu, N_tp,
