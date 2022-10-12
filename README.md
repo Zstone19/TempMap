@@ -1,5 +1,5 @@
 # TempMap
-A package following Stone et al. (2022) in using the method described in Neustadt & Kochanek (2022) (NK22) to form temperature perturbation maps for AGN accretion disks. The methodology is originally described in NK22, with small adjustments in Stone (2022). 
+A package following Stone & Shen (2022) in using the method described in Neustadt & Kochanek (2022) (NK22) to form temperature perturbation maps for AGN accretion disks. The methodology is originally described in NK22, with small adjustments in Stone (2022). 
 
 The repository is organized as follows:
 * `/temp_map` - The python package
