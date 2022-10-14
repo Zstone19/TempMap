@@ -4,7 +4,7 @@ A package following Stone & Shen (2022) in using the method described in Neustad
 
 The repository is organized as follows:
 * `/temp_map` - The python package
-* `/Examples` - Example Jupyter notebooks detailing two use cases for the package (for both simulated and real data)
+* `/Examples` - Example Jupyter notebooks detailing three use cases for the package (for both simulated and real data)
 * `/Paper` - Results from Stone et al. (2022), including GIFs of fit spectra
 
 ![Alt Text](./Paper/Disk_GIFs/Fig2_Disk_ingo.gif)
@@ -21,5 +21,11 @@ The algorithm can output a temperature map for an arbitrary number of specified 
 and also show the quality of the fit to the data with an animated GIF:
 
 ![Alt Text](./Paper/Fig2_Spectra_GIFs/ingo.gif)
+
+## Data and Contact
+[ArXiv]()
+
+All data for the SDSS-RM sample used in this paper (including spectra and AGN paramaters), as well as all output temperature maps are located on [Zenodo](https://zenodo.org/record/7195997)
+
 
 For any questions or comments, reach out to [Zachary Stone](mailto:stone28@illinois.edu) or [Yue Shen](mailto:shenyue@illinois.edu)
