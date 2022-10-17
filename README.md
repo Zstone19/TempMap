@@ -23,7 +23,7 @@ and also show the quality of the fit to the data with an animated GIF:
 ![Alt Text](./Paper/Fig2_Spectra_GIFs/ingo.gif)
 
 ## Data and Contact
-[ArXiv]()
+[ArXiv](https://arxiv.org/abs/2210.07452)
 
 All data for the SDSS-RM sample used in this paper (including spectra and AGN paramaters), as well as all output temperature maps are located on [Zenodo](https://zenodo.org/record/7195997)
 
