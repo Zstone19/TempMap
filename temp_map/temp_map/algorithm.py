@@ -35,28 +35,49 @@ def get_t3(tp, td, t0):
 @njit
 def get_t4(tp, td, t0, dt):
     return min(tp-td+dt, t0)
-    
-@njit
-def G1_fixed(t0, ta, tb, dt):    
-    if tb < ta:
-        return 0
-    else:
-        return np.sqrt( abs(  (t0**2 - tb**2)**2 - (t0**2 - ta**2)**2  ) )/np.pi/dt
-    
 
 @njit
 def G1(t0, ta, tb, dt):    
-    if tb < ta:
-        return 0
-    else:
-        return (  np.sqrt(t0**2 - tb**2) - np.sqrt(t0**2 - ta**2)  )/np.pi/dt
+    return (  np.sqrt(t0**2 - tb**2) - np.sqrt(t0**2 - ta**2)  )/np.pi/dt
 
 @njit
 def G2(t0, ta, tb):
-    if tb < ta:
+    return ( np.arcsin(tb/t0) - np.arcsin(ta/t0) )/np.pi
+
+
+@njit
+def get_smearing_term(tp, td, t0, dt):
+    
+    if tp + dt < td - t0:
         return 0
-    else:
-        return ( np.arcsin(tb/t0) - np.arcsin(ta/t0) )/np.pi
+    
+    if tp - dt > td + t0:
+        return 0
+    
+    
+    t1 = get_t1(tp, td, t0, dt)
+    t2 = get_t2(tp, td, t0)
+    t3 = get_t3(tp, td, t0)
+    t4 = get_t4(tp, td, t0, dt)
+    
+    if tp > td + t0:
+        t3 = t0
+        t4 = t0
+    
+    if tp < td - t0:
+        t1 = t0
+        t2 = t0
+        
+    term1 = -G1(t0, t1, t2, dt)
+    term2 = (td - tp + dt)*G2(t0, t1, t2)/dt
+    term3 = G1(t0, t3, t4, dt)
+    term4 = (tp + dt - td)*G2(t0, t3, t4)/dt
+    
+    return term1 + term2 + term3 + term4
+        
+    
+    
+    
 
 
 @njit
@@ -108,19 +129,10 @@ def make_W_spec_w_mean(row_dat, col_dat, input_dat, yvals, tp_vals, td_vals, lam
 
             td_full = np.full_like(tp_vals, td)
             t0_full = np.full_like(tp_vals, t0)
-            dt_full = np.full_like(tp_vals, dtp)
+            dt_full = np.full_like(tp_vals, dtp)            
             
-            t1 = np.array( list(map(get_t1, tp_vals, td_full, t0_full, dt_full)) )
-            t2 = np.array( list(map(get_t2, tp_vals, td_full, t0_full)) )                
-            t3 = np.array( list(map(get_t3, tp_vals, td_full, t0_full)) )    
-            t4 = np.array( list(map(get_t4, tp_vals, td_full, t0_full, dt_full)) )
-
-            term1 = np.array( list(map(G1, t0_full, t1, t2, dt_full)) )
-            term2 = (td - tp_vals + dtp)*np.array( list(map(G2, t0_full, t1, t2)) )/dtp
-            term3 = np.array( list(map(G1, t0_full, t3, t4, dt_full)) )
-            term4 = (-td + tp_vals + dtp)*np.array( list(map(G2, t0_full, t3, t4)) )/dtp 
-
-            Flux_vals = divsum(term1 + term2 + term3 + term4)
+            smear_vals = np.array(  list(map( get_smearing_term, tp_vals, td_full, t0_full, dt_full ))  )
+            Flux_vals = divsum(smear_vals)
             good_ind = np.argwhere( Flux_vals != 0. ).T[0] 
                     
                     
@@ -350,19 +362,10 @@ def make_W_arbitrary(row_dat, col_dat, input_dat, yvals, tp_vals, td_vals, lambd
             t0_full = np.full_like(tp_vals, t0)
             dt_full = np.full_like(tp_vals, dtp)
             
-            t1 = np.array( list(map(get_t1, tp_vals, td_full, t0_full, dt_full)) )
-            t2 = np.array( list(map(get_t2, tp_vals, td_full, t0_full)) )                
-            t3 = np.array( list(map(get_t3, tp_vals, td_full, t0_full)) )    
-            t4 = np.array( list(map(get_t4, tp_vals, td_full, t0_full, dt_full)) )
-
-            term1 = np.array( list(map(G1, t0_full, t1, t2, dt_full)) )
-            term2 = (td - tp_vals + dtp)*np.array( list(map(G2, t0_full, t1, t2)) )/dtp
-            term3 = np.array( list(map(G1, t0_full, t3, t4, dt_full)) )
-            term4 = (-td + tp_vals + dtp)*np.array( list(map(G2, t0_full, t3, t4)) )/dtp 
-
-            Flux_vals = divsum(term1 + term2 + term3 + term4)
+            smear_vals = np.array(  list(map( get_smearing_term, tp_vals, td_full, t0_full, dt_full ))  )
+            Flux_vals = divsum(smear_vals)
             good_ind = np.argwhere( Flux_vals != 0. ).T[0] 
-                    
+
                     
             for k in good_ind:
                 F0 = get_F0(alpha, MBH, wl, dist, inc)
