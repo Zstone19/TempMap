@@ -451,7 +451,7 @@ def plot_profs_inout_dist(dToT_input, dToT_outputs_reshape, tp_vals, yvals, xi_v
     plt.subplots_adjust(wspace=.05, hspace=.05)
 
     #Make colorbar
-    cbar = fig.colorbar(im, ax=[ax], location='right', shrink=1.0, pad=.03, aspect=20)
+    cbar = fig.colorbar(im, ax=ax, location='right', shrink=1.0, pad=.03, aspect=20)
     cbar.ax.tick_params(labelsize=14)
     cbar.ax.tick_params('both', which='major', length=8)
     cbar.ax.tick_params('both', which='minor', length=4)
