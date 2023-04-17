@@ -6,4 +6,3 @@ matplotlib
 tqdm
 numba_progress
 awkward
-ffmpeg
