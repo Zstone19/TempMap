@@ -83,11 +83,8 @@ def plot_profs_inout(dToT_input, dToT_outputs_reshape, tp_vals, yvals, xi_vals, 
     else:
         cmap = mpl.cm.get_cmap('RdBu_r')
 
-    arrays = np.concatenate( [ [dToT_input], dToT_outputs_reshape ] )
 
-
-
-    ticks, tick_labels, Nlabel = run_tick_loop(tp_vals)
+    ticks, tick_labels, _ = run_tick_loop(tp_vals)
 
 
 
@@ -289,7 +286,7 @@ def plot_profs_inout_dist(dToT_input, dToT_outputs_reshape, tp_vals, yvals, xi_v
         cmap = mpl.cm.get_cmap('RdBu_r')
 
     arrays = np.concatenate( [ [dToT_input], dToT_outputs_reshape ] )
-    ticks, tick_labels, Nlabel = run_tick_loop(tp_vals)
+    ticks, tick_labels, _ = run_tick_loop(tp_vals)
 
 
     fig, ax = plt.subplots(2, len(arrays), figsize=(4*len(arrays), 7) )
@@ -499,7 +496,7 @@ def plot_profs_out(dToT_outputs_reshape, tp_vals, yvals, xi_vals, chi2_vals, fna
     else:
         cmap = mpl.cm.get_cmap(cmap_name)
 
-    ticks, tick_labels, Nlabel = run_tick_loop(tp_vals)
+    ticks, tick_labels, _ = run_tick_loop(tp_vals)
 
     N = len(dToT_outputs_reshape)
     Nrow = np.ceil( N/Ncol ).astype(int)
@@ -728,8 +725,6 @@ def animate_arbitrary_data(lengths, fitted_dat, flux_dat, err_dat, mean_dat,
     #Lambda must be in units of cm
     colors = ['r', 'green', 'orange', 'c', 'b', 'lime']
 
-    N_td = len(td_vals)
-    N_nu = len(lambda_vals)
     N = len(xi_vals)
     
     assert np.sum(lengths).astype(int) == len(td_vals) == len(lambda_vals)
@@ -840,7 +835,7 @@ def animate_arbitrary_data(lengths, fitted_dat, flux_dat, err_dat, mean_dat,
         
 
     anim = animation.FuncAnimation(fig, animate,
-                                   frames=len(lc_lengths), interval=20, repeat_delay=10)
+                                   frames=len(lengths), interval=20, repeat_delay=10)
 
     anim.save(fname, writer='ffmpeg', fps=fps)
     

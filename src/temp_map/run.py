@@ -72,9 +72,6 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     Nchunk = int(Nchunk)
     
     
-    dy = yvals[1] - yvals[0]
-    dt = tp_vals[1] - tp_vals[0]
-    
     obj_name = AGN_params['obj_name']
     MBH = AGN_params['MBH']
     lambda_edd = AGN_params['lambda_edd']
@@ -292,16 +289,11 @@ def run_spectra_sim(dToT_input, tp_vals, yvals, td_vals, lambda_vals, AGN_params
     N_td = len(td_vals)
     N_nu = len(lambda_vals)
     
-    dt = tp_vals[1] - tp_vals[0]
-    dy = yvals[1] - yvals[0]
-    
     assert dToT_input.shape == (Nu, N_tp)
     
-    obj_name = AGN_params['obj_name']
     MBH = AGN_params['MBH']
     lambda_edd = AGN_params['lambda_edd']
     dist = AGN_params['dist']
-    z = AGN_params['z']
     inc = AGN_params['inc']
     alpha = AGN_params['alpha']
     
@@ -327,7 +319,7 @@ def run_spectra_sim(dToT_input, tp_vals, yvals, td_vals, lambda_vals, AGN_params
     if verbose:
         print('Getting steady-state...')
         with ProgressBar(total=Nu*N_tp*N_nu*N_td) as progress:
-            F_input, dF_input = make_F_dF(dToT_input, tp_vals, td_vals, 
+            F_input, _ = make_F_dF(dToT_input, tp_vals, td_vals, 
                                             lambda_vals, yvals, 
                                             MBH, 
                                             lambda_edd, 
@@ -335,7 +327,7 @@ def run_spectra_sim(dToT_input, tp_vals, yvals, td_vals, lambda_vals, AGN_params
                                             inc, progress, alpha=alpha,
                                             dat_type='dToT', include_F0=True)
     else:
-        F_input, dF_input = make_F_dF(dToT_input, tp_vals, td_vals, 
+        F_input, _ = make_F_dF(dToT_input, tp_vals, td_vals, 
                                         lambda_vals, yvals, 
                                         MBH, 
                                         lambda_edd, 

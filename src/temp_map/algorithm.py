@@ -248,7 +248,6 @@ def make_F_dF_nonlinear(input_dat, tp_vals, td_vals, lambda_vals, yvals, MBH, la
               h=const.h.cgs.value, c=const.c.cgs.value, kB=const.k_B.cgs.value, include_F0=True, dat_type='dToT',
               max_float=sys.float_info.max, min_float=sys.float_info.min):
     
-    N_tp = len(tp_vals)
     N_td = len(td_vals)
     Nu = len(yvals)
     N_nu = len(lambda_vals)
@@ -408,7 +407,6 @@ def make_F_dF_nonlinear_arbitrary(input_dat, tp_vals, td_vals, lambda_vals,
                                   include_F0=True, dat_type='dToT',
                                   max_float=sys.float_info.max, min_float=sys.float_info.min):
     
-    N_tp = len(tp_vals)
     N_td = len(td_vals)
     Nu = len(yvals)
     
