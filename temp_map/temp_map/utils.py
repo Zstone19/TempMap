@@ -1,9 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import astropy.constants as const
-from tqdm import tqdm
 from scipy.sparse import csc_matrix
-from scipy.interpolate import interp1d
 from numba import njit
 
 

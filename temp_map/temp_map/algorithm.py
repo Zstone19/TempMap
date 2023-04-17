@@ -1,11 +1,9 @@
 import numpy as np
-from tqdm import tqdm
 import astropy.constants as const
 from scipy.sparse import csc_matrix
 import awkward as ak
 
 from numba import njit
-from numba_progress import ProgressBar
 
 import sys
 

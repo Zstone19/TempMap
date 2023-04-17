@@ -1,16 +1,9 @@
 import numpy as np
 import astropy.constants as const
-from scipy.sparse import csc_matrix
 
 from numba import njit
 
-import sys
-
-
-
-from .utils import get_temperature_profile, get_Rin, get_F0
-from .algorithm import get_t1, get_t2, get_t3, get_t4, G1, G2
-
+from .utils import get_Rin
 
 
 def const_perturbation(yvals, tp_vals, pert_min, pert_max):

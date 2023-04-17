@@ -2,10 +2,8 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 
 import numpy as np
-from tqdm import tqdm
-import astropy.constants as const
 
-from .utils import rescale, rescale_factor
+
 
 
 

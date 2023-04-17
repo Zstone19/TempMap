@@ -1,26 +1,14 @@
-import matplotlib.pyplot as plt
-from matplotlib.colors import Normalize
-from matplotlib.cm import ScalarMappable, get_cmap
-
 import numpy as np
 from pyrsistent import l
-from tqdm import tqdm
-from scipy.sparse import csc_matrix, diags, identity
-import scipy.sparse.linalg as spla
+from scipy.sparse import csc_matrix
 import awkward as ak
 
 from numba import njit
 from numba_progress import ProgressBar
-import astropy.constants as const
-import astropy.units as u
 
-import awkward as ak
-
-
-
-from .utils import get_temperature_profile, chunk_fill, get_F0
+from .utils import chunk_fill
 from .algorithm import make_F_dF, make_W_spec_w_mean, make_smoothing_matrices, make_F_dF_nonlinear
-from .plotting import plot_profs_inout, plot_profs_inout_dist, plot_profs_out, animate_spectra_out
+from .plotting import plot_profs_inout_dist, plot_profs_out, animate_spectra_out
 
 
 import matplotlib as mpl
@@ -53,24 +41,24 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
 
     #AGN_params labels
     #-----------------
-    #- Object name:     'obj_name
-    #- SMBH mass:       'MBH'
-    #- Distance:        'dist'
-    #- Eddington ratio: 'lambda_edd'
-    #- Redshft:         'z'
-    #- Alpha parameter: 'alpha'
-    #- Inclination:     'inc'
+    # Object name:     'obj_name'
+    # SMBH mass:       'MBH'
+    # Distance:        'dist'
+    # Eddington ratio: 'lambda_edd'
+    # Redshft:         'z'
+    # Alpha parameter: 'alpha'
+    # Inclination:     'inc'
     
     
     #Units
     #-----
-    #lambda:   cm
-    #flux,err: erg/s/cm^3
-    #tp, td:   days
-    #y:        dimensionless
-    #MBH:      g
-    #dist:     cm
-    #inc:      rad
+    # lambda:   cm
+    # flux, err: erg/s/cm^3
+    # tp, td:   days
+    # y:        dimensionless
+    # MBH:      g
+    # dist:     cm
+    # inc:      rad
 
     
     
@@ -195,7 +183,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     #Values are small, so use large fluff factor
     FLUFF = 1e9
         
-    #Get Chi2 coefficients
+    #Get Chi2-minimized coefficients
     m_coefs = np.zeros( ( len(xi_vals), N_nu ) )
 
     for i in range(len(xi_vals)):
@@ -282,6 +270,10 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
                      lambda_vals=lambda_vals,
                      xi_vals=xi_vals,
                      AGN_params=AGN_params)
+    
+
+    del dToT_outputs_reshape, fitted_spec, flux_reshape, err_reshape, mean_flux
+    del chi2_tot, tp_vals, yvals, td_vals, lambda_vals, xi_vals, AGN_params
         
     return out_dict
 
