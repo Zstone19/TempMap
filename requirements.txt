@@ -7,3 +7,6 @@ tqdm
 numba_progress
 awkward
 scikit-image
+
+mkl
+sparse_dot_mkl @ git+https://github.com/flatironinstitute/sparse_dot

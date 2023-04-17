@@ -5,6 +5,7 @@ import awkward as ak
 
 from numba import njit
 from numba_progress import ProgressBar
+from sparse_dot_mkl import gram_matrix_mkl
 
 from .utils import chunk_fill
 from .algorithm import make_F_dF, make_W_spec_w_mean, make_smoothing_matrices, make_F_dF_nonlinear
@@ -111,7 +112,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     
     
     
-    WTW = W_input.transpose() @ W_input
+    WTW = gram_matrix_mkl(W_input, cast=True)
     size = WTW.shape[0]
     I, Dk, Dl = make_smoothing_matrices(Nu, N_tp, size)
     del size
