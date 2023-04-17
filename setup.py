@@ -10,7 +10,7 @@ setup(
     author_email = 'stone28@illinois.edu',
     packages = ['temp_map'],
     license = 'MIT',
-    description = 'A package to calculate the temerature perturbation map of an AGN, following Stone et al. 2022.',
+    description = 'A package following Stone & Shen (2023) for AGN accretion disk temperature fluctuation maps',
     long_description = open('README.md').read(),
     install_requires = install_requires
 )

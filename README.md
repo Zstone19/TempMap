@@ -5,7 +5,7 @@ A package following Stone & Shen (2023) in using the method described in Neustad
 The repository is organized as follows:
 * `/src` - The python package
 * `/Examples` - Example Jupyter notebooks detailing three use cases for the package (for both simulated and real data)
-* `/Paper` - Results from Stone & Shen (2022), including GIFs of fit spectra
+* `/Paper` - Results from Stone & Shen (2023), including GIFs of fit spectra
 
 ![Alt Text](./Paper/Disk_GIFs/Fig2_Disk_two-rings.gif)
 
