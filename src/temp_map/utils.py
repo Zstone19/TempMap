@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import astropy.constants as const
-from scipy.sparse import csr_matrix
+from scipy.sparse import csc_matrix
 from numba import njit
 from tqdm import tqdm
 
@@ -215,12 +215,12 @@ def chunk_fill(row_snap, col_snap, dat_snap, shape, Nchunk=1e5, verbose=True):
             input_dat = extract_indices( dat_snap, n*Nchunk, (n+1)*Nchunk )
 
             if n == 0:
-                W_tot = csr_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
+                W_tot = csc_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
                 del row_dat, col_dat, input_dat
 
                 continue
 
-            W_tot = W_tot + csr_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
+            W_tot = W_tot + csc_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
             del row_dat, col_dat, input_dat
 
         
@@ -233,21 +233,23 @@ def chunk_fill(row_snap, col_snap, dat_snap, shape, Nchunk=1e5, verbose=True):
             input_dat = extract_indices( dat_snap, n*Nchunk, (n+1)*Nchunk )
 
             if n == 0:
-                W_tot = csr_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
+                W_tot = csc_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
                 del row_dat, col_dat, input_dat
 
                 continue
 
-            W_tot = W_tot + csr_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
+            W_tot = W_tot + csc_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
             del row_dat, col_dat, input_dat
 
     row_dat = np.array(row_snap[(n+1)*Nchunk:])
     col_dat = np.array(col_snap[(n+1)*Nchunk:])
     input_dat = np.array(dat_snap[(n+1)*Nchunk:])
 
-    W_input = W_tot + csr_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
+    W_input = W_tot + csc_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
     del row_dat, col_dat, input_dat
     del W_tot
+    
+    W_input = W_input.tocsr()
     
     return W_input
 
