@@ -116,7 +116,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     if verbose:
         print('Constructing WTW matrix...')
 
-    res = gram_matrix_mkl( W_input.tocsr() )
+    res = gram_matrix_mkl( W_input )
     WTW = res.transpose() + res - diags(res.diagonal(), format='csr')  
     del res  
     
@@ -131,7 +131,12 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     if verbose:
         print('Inverting...')  
       
-      
+    assert WTb.shape == (Nu*N_tp + N_nu, 1)
+    assert WTW.shape == (Nu*N_tp + N_nu, Nu*N_tp + N_nu)
+    
+    assert isinstance(WTb, csr_matrix)
+    assert isinstance(WTW, csr_matrix)
+
     if solver == 'direct':
         inv_outputs = []
         for xi in xi_vals:
