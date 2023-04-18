@@ -113,6 +113,9 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     
     
     
+    if verbose:
+        print('Constructing WTW matrix...')
+
     res = gram_matrix_mkl( W_input.tocsr() )
     WTW = res.transpose() + res - diags(res.diagonal(), format='csr')  
     del res  
