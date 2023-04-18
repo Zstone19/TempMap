@@ -1,6 +1,6 @@
 import numpy as np
 import astropy.constants as const
-from scipy.sparse import csc_matrix
+from scipy.sparse import csr_matrix
 import awkward as ak
 
 from numba import njit
@@ -551,8 +551,8 @@ def make_smoothing_matrices(Nu, N_tp, size):
                                                                                             row_l, col_l, dat_l)
 
 
-    I = csc_matrix( ( dat_i, (row_i, col_i) ), shape=(size, size) )
-    Dk = csc_matrix( ( dat_k, (row_k, col_k) ), shape=(size, size) )
-    Dl = csc_matrix( ( dat_l, (row_l, col_l) ), shape=(size, size) )
+    I = csr_matrix( ( dat_i, (row_i, col_i) ), shape=(size, size) )
+    Dk = csr_matrix( ( dat_k, (row_k, col_k) ), shape=(size, size) )
+    Dl = csr_matrix( ( dat_l, (row_l, col_l) ), shape=(size, size) )
 
     return I, Dk, Dl

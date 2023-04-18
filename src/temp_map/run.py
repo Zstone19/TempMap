@@ -1,6 +1,6 @@
 import numpy as np
 from pyrsistent import l
-from scipy.sparse import csc_matrix, diags
+from scipy.sparse import csr_matrix, diags
 import awkward as ak
 
 from numba import njit
@@ -125,7 +125,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     del size
     
     WTb = W_input.transpose() @ (flux_dat/err_dat)
-    WTb = csc_matrix(WTb).transpose()
+    WTb = csr_matrix(WTb).transpose()
     
     
     if verbose:
@@ -135,7 +135,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     if solver == 'direct':
         inv_outputs = []
         for xi in xi_vals:
-            A = csc_matrix( WTW + xi*(I + Dk + Dl) )
+            A = csr_matrix( WTW + xi*(I + Dk + Dl) )
 
             res = fast_res(A.todense(), WTb.todense())
             res = np.array(res).T[0]
@@ -147,7 +147,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     if solver == 'pypardiso':
         inv_outputs = []
         for xi in xi_vals:
-            A = csc_matrix( WTW + xi*(I + Dk + Dl) )
+            A = csr_matrix( WTW + xi*(I + Dk + Dl) )
 
             res = pypardiso.spsolve(A, WTb)
             inv_outputs.append( res )
