@@ -6,6 +6,7 @@ import awkward as ak
 from numba import njit
 from numba_progress import ProgressBar
 from sparse_dot_mkl import gram_matrix_mkl
+import pypardiso
 
 from .utils import chunk_fill
 from .algorithm import make_F_dF, make_W_spec_w_mean, make_smoothing_matrices, make_F_dF_nonlinear
@@ -35,7 +36,7 @@ def fast_res(A, b):
 
 
 def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_vals, 
-                AGN_params, xi_vals, Nchunk=1e6, fps=10, verbose=True,
+                AGN_params, xi_vals, Nchunk=1e6, solver='direct', fps=10, verbose=True,
                 show_tp=True, tp_fname=None, spec_fname=None, dat_fname=None):
 
 
@@ -124,15 +125,29 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     if verbose:
         print('Inverting...')  
       
-    inv_outputs = []
-    for xi in xi_vals:
-        A = csc_matrix( WTW + xi*(I + Dk + Dl) )
+      
+    if solver == 'direct':
+        inv_outputs = []
+        for xi in xi_vals:
+            A = csc_matrix( WTW + xi*(I + Dk + Dl) )
 
-        res = fast_res(A.todense(), WTb.todense())
-        res = np.array(res).T[0]
+            res = fast_res(A.todense(), WTb.todense())
+            res = np.array(res).T[0]
 
-        inv_outputs.append( res )
-        del A, res
+            inv_outputs.append( res )
+            del A, res
+
+
+    if solver == 'pypardiso':
+        inv_outputs = []
+        for xi in xi_vals:
+            A = csc_matrix( WTW + xi*(I + Dk + Dl) )
+
+            res = pypardiso.spsolve(A, WTb)
+            inv_outputs.append( res )
+
+            del A, res
+
         
     del WTW, WTb, I, Dk, Dl  
         
@@ -282,7 +297,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
 
 
 def run_spectra_sim(dToT_input, tp_vals, yvals, td_vals, lambda_vals, AGN_params, xi_vals, 
-                    err_mean=.03, err_std=.005, Nchunk=1e6, fps=10, verbose=True,
+                    err_mean=.03, err_std=.005, Nchunk=1e6, solver='direct', fps=10, verbose=True,
                     tp_fname=None, spec_fname=None, dat_fname=None, show_tp=True):
     
     Nu = len(yvals)
@@ -361,7 +376,7 @@ def run_spectra_sim(dToT_input, tp_vals, yvals, td_vals, lambda_vals, AGN_params
     output = run_spectra(processed_input_spec, input_err, mean_flux, 
                          tp_vals, yvals, td_vals, lambda_vals, 
                          AGN_params, xi_vals, verbose=verbose, 
-                         Nchunk=Nchunk, show_tp=False)
+                         Nchunk=Nchunk, solver=solver, show_tp=False)
     
     output['input'] = dToT_input
     
