@@ -112,7 +112,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     
     
     
-    WTW = gram_matrix_mkl(W_input, cast=True)
+    WTW = gram_matrix_mkl(W_input.tocsr())
     size = WTW.shape[0]
     I, Dk, Dl = make_smoothing_matrices(Nu, N_tp, size)
     del size

@@ -9,4 +9,6 @@ awkward
 scikit-image
 
 mkl
-sparse_dot_mkl @ git+https://github.com/flatironinstitute/sparse_dot
+sparse-dot-mkl
+pylspack @ git+https://github.com/IBM/pylspack
+pypardiso
