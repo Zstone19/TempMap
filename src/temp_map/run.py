@@ -134,6 +134,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     assert WTb.shape == (Nu*N_tp + N_nu, 1)
     assert WTW.shape == (Nu*N_tp + N_nu, Nu*N_tp + N_nu)
     
+    print(type(WTb), type(WTW))
     assert isinstance(WTb, csr_matrix)
     assert isinstance(WTW, csr_matrix)
 
