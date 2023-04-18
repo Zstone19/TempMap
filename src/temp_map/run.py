@@ -1,6 +1,6 @@
 import numpy as np
 from pyrsistent import l
-from scipy.sparse import csc_matrix
+from scipy.sparse import csc_matrix, diags
 import awkward as ak
 
 from numba import njit
@@ -36,7 +36,7 @@ def fast_res(A, b):
 
 
 def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_vals, 
-                AGN_params, xi_vals, Nchunk=1e6, solver='direct', fps=10, verbose=True,
+                AGN_params, xi_vals, Nchunk=1e6, solver='pypardiso', fps=10, verbose=True,
                 show_tp=True, tp_fname=None, spec_fname=None, dat_fname=None):
 
 
@@ -113,7 +113,10 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     
     
     
-    WTW = gram_matrix_mkl(W_input.tocsr())
+    res = gram_matrix_mkl( W_input.tocsr() )
+    WTW = res.transpose() + res - diags(res.diagonal(), format='csr')  
+    del res  
+    
     size = WTW.shape[0]
     I, Dk, Dl = make_smoothing_matrices(Nu, N_tp, size)
     del size
@@ -297,9 +300,9 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
 
 
 def run_spectra_sim(dToT_input, tp_vals, yvals, td_vals, lambda_vals, AGN_params, xi_vals, 
-                    err_mean=.03, err_std=.005, Nchunk=1e6, solver='direct', fps=10, verbose=True,
+                    err_mean=.03, err_std=.005, Nchunk=1e6, solver='pypardiso', fps=10, verbose=True,
                     tp_fname=None, spec_fname=None, dat_fname=None, show_tp=True):
-    
+
     Nu = len(yvals)
     N_tp = len(tp_vals)
     N_td = len(td_vals)

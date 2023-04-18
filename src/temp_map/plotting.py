@@ -230,7 +230,7 @@ def plot_profs_inout(dToT_input, dToT_outputs_reshape, tp_vals, yvals, xi_vals, 
     plt.figtext(.4, -.05, 'Rest-Frame Time [d]', fontsize=22)
 
     #Make colorbar
-    cbar = fig.colorbar(im, ax=[ax], location='right', shrink=1.0, pad=.01, aspect=15 + 5*(Nrow-1) )
+    cbar = fig.colorbar(im, ax=ax, location='right', shrink=1.0, pad=.01, aspect=15 + 5*(Nrow-1) )
     cbar.ax.tick_params(labelsize=12)
     cbar.ax.tick_params('both', which='major', length=6)
     cbar.ax.tick_params('both', which='minor', length=3)
@@ -604,7 +604,7 @@ def plot_profs_out(dToT_outputs_reshape, tp_vals, yvals, xi_vals, chi2_vals, fna
     plt.subplots_adjust(wspace=.05, hspace=.25)
 
     #Make colorbar
-    cbar = fig.colorbar(im, ax=[ax], location='right', shrink=1.0, pad=.01, aspect=15 + 5*(Nrow-1))
+    cbar = fig.colorbar(im, ax=ax, location='right', shrink=1.0, pad=.01, aspect=15 + 5*(Nrow-1))
     cbar.ax.tick_params(labelsize=12)
     cbar.ax.tick_params('both', which='major', length=6)
     cbar.ax.tick_params('both', which='minor', length=3)
