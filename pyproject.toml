@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "temp-map"
+name = "temp_map"
 version = "0.1.0"
 description = "A package following Stone & Shen (2023) for AGN accretion disk temperature fluctuation maps"
 authors = ["Zstone19 <stone28@illinois.edu>"]
 readme = "README.md"
-packages = [{include = "temp_map"}]
+
 
 [tool.poetry.dependencies]
 python = ">=3.8, <3.12"
@@ -20,6 +20,7 @@ scikit-image = "<=0.20.0"
 mkl = "^2023.1.0"
 sparse-dot-mkl = "^0.8.3"
 pypardiso = "^0.4.2"
+ffmpeg = "^1.4"
 
 
 [build-system]
