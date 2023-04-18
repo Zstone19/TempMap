@@ -105,7 +105,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     col_snap = cols.snapshot()
     dat_snap = inputs.snapshot()
 
-    W_input = chunk_fill(row_snap, col_snap, dat_snap, shape=( N_nu*N_td, Nu*N_tp + N_nu ), Nchunk=Nchunk)
+    W_input = chunk_fill(row_snap, col_snap, dat_snap, shape=( N_nu*N_td, Nu*N_tp + N_nu ), Nchunk=Nchunk, verbose=verbose)
     del row_dat, col_dat, input_dat
     del rows, cols, inputs
     del row_snap, col_snap, dat_snap, Nchunk

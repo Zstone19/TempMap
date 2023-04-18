@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import astropy.constants as const
 from scipy.sparse import csr_matrix
 from numba import njit
+from tqdm import tqdm
 
 
 @njit
@@ -202,24 +203,43 @@ def extract_indices(ak_arr, i1, i2):
     return list(ak_arr[i1:i2])
 
 
-def chunk_fill(row_snap, col_snap, dat_snap, shape, Nchunk=1e5):
+def chunk_fill(row_snap, col_snap, dat_snap, shape, Nchunk=1e5, verbose=True):
     
     #row_snap, col_snap, dat_snap are snapshots of the csr data Awkward arrays
     
-    for n in range( len(row_snap)//Nchunk ):
+    if verbose:
+        for n in tqdm( range( len(row_snap)//Nchunk ) ):
 
-        row_dat = extract_indices( row_snap, n*Nchunk, (n+1)*Nchunk )
-        col_dat = extract_indices( col_snap, n*Nchunk, (n+1)*Nchunk )
-        input_dat = extract_indices( dat_snap, n*Nchunk, (n+1)*Nchunk )
+            row_dat = extract_indices( row_snap, n*Nchunk, (n+1)*Nchunk )
+            col_dat = extract_indices( col_snap, n*Nchunk, (n+1)*Nchunk )
+            input_dat = extract_indices( dat_snap, n*Nchunk, (n+1)*Nchunk )
 
-        if n == 0:
-            W_tot = csr_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
+            if n == 0:
+                W_tot = csr_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
+                del row_dat, col_dat, input_dat
+
+                continue
+
+            W_tot = W_tot + csr_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
             del row_dat, col_dat, input_dat
 
-            continue
+        
+        
+    else:
+        for n in range( len(row_snap)//Nchunk ):
 
-        W_tot = W_tot + csr_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
-        del row_dat, col_dat, input_dat
+            row_dat = extract_indices( row_snap, n*Nchunk, (n+1)*Nchunk )
+            col_dat = extract_indices( col_snap, n*Nchunk, (n+1)*Nchunk )
+            input_dat = extract_indices( dat_snap, n*Nchunk, (n+1)*Nchunk )
+
+            if n == 0:
+                W_tot = csr_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
+                del row_dat, col_dat, input_dat
+
+                continue
+
+            W_tot = W_tot + csr_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
+            del row_dat, col_dat, input_dat
 
     row_dat = np.array(row_snap[(n+1)*Nchunk:])
     col_dat = np.array(col_snap[(n+1)*Nchunk:])
