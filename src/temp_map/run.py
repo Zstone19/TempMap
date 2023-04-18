@@ -117,6 +117,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
         print('Constructing WTW matrix...')
 
     res = gram_matrix_mkl( W_input )
+    print(type(res))
     WTW = res.transpose() + res - diags(res.diagonal(), format='csr')  
     del res  
     
@@ -133,10 +134,7 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
       
     assert WTb.shape == (Nu*N_tp + N_nu, 1)
     assert WTW.shape == (Nu*N_tp + N_nu, Nu*N_tp + N_nu)
-    
-    print(type(WTb), type(WTW))
-    assert isinstance(WTb, csr_matrix)
-    assert isinstance(WTW, csr_matrix)
+    assert type(WTb) == type(WTW)
 
     if solver == 'direct':
         inv_outputs = []
