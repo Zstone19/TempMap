@@ -660,6 +660,8 @@ def animate_spectra_out(fitted_spec, flux_dat, err_dat, mean_spec, td_vals, lamb
 
     assert fitted_spec.shape == ( N, N_nu, N_td )
     assert flux_dat.shape == ( N_nu, N_td )
+    
+    assert np.all( np.array(err_dat) > 0 )
 
     flux_dat_rel = np.zeros_like(flux_dat)
     err_dat_rel = np.zeros_like(err_dat)

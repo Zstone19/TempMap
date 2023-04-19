@@ -31,7 +31,7 @@ The package ``temp-map`` can be installed through ``pip``:
     pip install .
 ```
 
-In some cases, the Gram matrix ($W^T W$) creation algorithm may not be able to find Intel's MKL library. In this case, the user may need to install the ``mkl`` python package through a different channel. This can quikly be done in an anaconda environment:
+In some cases, the Gram matrix ($W^T W$) creation algorithm may not be able to find Intel's MKL library. In this case, the user may need to install the ``mkl`` python package through a different channel. This can quickly be done in an anaconda environment:
 ```
     conda install -c intel mkl=2021.4.0
 ```
