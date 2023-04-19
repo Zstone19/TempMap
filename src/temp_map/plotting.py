@@ -680,7 +680,7 @@ def animate_spectra_out(fitted_spec, flux_dat, err_dat, mean_spec, td_vals, lamb
 
         for n in range(N):
             spec_in = flux_dat[:,i]/mean_spec
-            spec_err = err_dat[:,i]/mean_spec
+            spec_err = np.abs(err_dat[:,i]/mean_spec)
             spec_out = fitted_spec[n,:,i]/mean_spec
 
             _, _, bars = ax.errorbar(x, spec_in, spec_err, fmt='.k', markersize=1, elinewidth=.05)
@@ -787,7 +787,7 @@ def animate_arbitrary_data(lengths, fitted_dat, flux_dat, err_dat, mean_dat,
             ybar = mean_dat[i]
 
         y_in = flux_dat[ind1:ind2]/ybar
-        y_err = err_dat[ind1:ind2]/ybar
+        y_err = np.abs(err_dat[ind1:ind2]/ybar)
 
         ax.cla()
 
