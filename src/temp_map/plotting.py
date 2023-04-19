@@ -660,14 +660,12 @@ def animate_spectra_out(fitted_spec, flux_dat, err_dat, mean_spec, td_vals, lamb
 
     assert fitted_spec.shape == ( N, N_nu, N_td )
     assert flux_dat.shape == ( N_nu, N_td )
-    
-    assert np.all( np.array(err_dat) > 0 )
 
     flux_dat_rel = np.zeros_like(flux_dat)
     err_dat_rel = np.zeros_like(err_dat)
     for i in range(N_td):
         flux_dat_rel[:, i] = flux_dat[:,i]/mean_spec
-        err_dat_rel[:, i] = err_dat[:,i]/mean_spec
+        err_dat_rel[:, i] = np.abs(err_dat[:,i]/mean_spec)
 
 
     ymax = np.max(flux_dat_rel + err_dat_rel)
@@ -743,7 +741,7 @@ def animate_arbitrary_data(lengths, fitted_dat, flux_dat, err_dat, mean_dat,
             ind2 = ind1 + lengths[i]
             
             flux_dat_rel[ind1:ind2] = flux_dat[ind1:ind2]/mean_dat
-            err_dat_rel[ind1:ind2] = err_dat[ind1:ind2]/mean_dat
+            err_dat_rel[ind1:ind2] = np.abs(err_dat[ind1:ind2]/mean_dat)
         
         ymax = np.max(flux_dat_rel + err_dat_rel)
         ymin = np.min(flux_dat_rel - err_dat_rel)
