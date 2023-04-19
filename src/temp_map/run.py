@@ -135,6 +135,24 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
     assert WTW.shape == (Nu*N_tp + N_nu, Nu*N_tp + N_nu)
     assert type(WTb) == type(WTW)
 
+
+    if solver == 'pypardiso':
+        try:
+            inv_outputs = []
+            for xi in xi_vals:
+                A = csr_matrix( WTW + xi*(I + Dk + Dl) )
+
+                res = pypardiso.spsolve(A, WTb)
+                inv_outputs.append( res )
+
+                del A, res
+        except:
+            if verbose:
+                print('PyPardiso failed, trying direct solver...')
+
+            solver = 'direct'
+
+
     if solver == 'direct':
         inv_outputs = []
         for xi in xi_vals:
@@ -145,17 +163,8 @@ def run_spectra(flux_dat, err_dat, mean_flux, tp_vals, yvals, td_vals, lambda_va
 
             inv_outputs.append( res )
             del A, res
-
-
-    if solver == 'pypardiso':
-        inv_outputs = []
-        for xi in xi_vals:
-            A = csr_matrix( WTW + xi*(I + Dk + Dl) )
-
-            res = pypardiso.spsolve(A, WTb)
-            inv_outputs.append( res )
-
-            del A, res
+            
+            
 
         
     del WTW, WTb, I, Dk, Dl  
