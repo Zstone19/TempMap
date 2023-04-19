@@ -22,6 +22,28 @@ and also show the quality of the fit to the data with an animated GIF:
 
 ![Alt Text](./Paper/Fig2_Spectra_GIFs/ingo.gif)
 
+
+
+## Installation
+
+The package ``temp-map`` can be installed through ``pip``:
+```
+    pip install .
+```
+
+In some cases, the Gram matrix ($W^T W$) creation algorithm may not be able to find Intel's MKL library. In this case, the user may need to install the ``mkl`` python package through a different channel. This can quikly be done in an anaconda environment:
+```
+    conda install -c intel mkl=2021.4.0
+```
+
+The sparse linear algebra solver [PyPardiso](https://github.com/haasad/PyPardisoProject) may also fail in some situations. This is noted as an [issue](https://github.com/haasad/PyPardisoProject/issues/36) in PyPardiso, and is due to ``intel-openmp`` not recognizing the ``mkl`` library. The easiest way to fix this is to reinstall certain releases of the two packages. As an example, here is a way to install them into an anaconda environment:
+```
+    conda install -c conda-forge intel-openmp=2021.4.0
+    conda install -c intel mkl=2021.4.0
+```
+
+
+
 ## Data and Contact
 [ArXiv](https://arxiv.org/abs/2210.07452)
 
