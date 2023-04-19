@@ -300,14 +300,14 @@ tifffile = ["tifffile"]
 
 [[package]]
 name = "importlib-metadata"
-version = "6.4.1"
+version = "6.5.0"
 description = "Read metadata from Python packages"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "importlib_metadata-6.4.1-py3-none-any.whl", hash = "sha256:63ace321e24167d12fbb176b6015f4dbe06868c54a2af4f15849586afb9027fd"},
-    {file = "importlib_metadata-6.4.1.tar.gz", hash = "sha256:eb1a7933041f0f85c94cd130258df3fb0dec060ad8c1c9318892ef4192c47ce1"},
+    {file = "importlib_metadata-6.5.0-py3-none-any.whl", hash = "sha256:03ba783c3a2c69d751b109fc0c94a62c51f581b3d6acf8ed1331b6d5729321ff"},
+    {file = "importlib_metadata-6.5.0.tar.gz", hash = "sha256:7a8bdf1bc3a726297f5cfbc999e6e7ff6b4fa41b26bba4afc580448624460045"},
 ]
 
 [package.dependencies]
@@ -339,17 +339,17 @@ testing = ["flake8 (<5)", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-chec
 
 [[package]]
 name = "intel-openmp"
-version = "2023.1.0"
+version = "2021.4.0"
 description = "Intel OpenMP* Runtime Library"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "intel_openmp-2023.1.0-py2.py3-none-macosx_10_15_x86_64.macosx_11_0_x86_64.whl", hash = "sha256:39308882e7bcdbd17e2d2b3be96e34ed475f60205bc90cb86694d0bcfc955bbc"},
-    {file = "intel_openmp-2023.1.0-py2.py3-none-manylinux1_i686.whl", hash = "sha256:0ca275fd223bda7b835f3b30221ee462e934468738dcbb26741c57e795f09818"},
-    {file = "intel_openmp-2023.1.0-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:523094cd2593d31c71ce2d6b2942389fa9d231dce9f8825bfec9e2fdc545e037"},
-    {file = "intel_openmp-2023.1.0-py2.py3-none-win32.whl", hash = "sha256:0e3166732d0a2105988e538baaffff1182fd5a23883da255b3bf62c187475b46"},
-    {file = "intel_openmp-2023.1.0-py2.py3-none-win_amd64.whl", hash = "sha256:7bd67f60ca3da7dbe39ab2a296b5322f8e8248d59d7573068deeeb9b0f901895"},
+    {file = "intel_openmp-2021.4.0-py2.py3-none-macosx_10_15_x86_64.macosx_11_0_x86_64.whl", hash = "sha256:41c01e266a7fdb631a7609191709322da2bbf24b252ba763f125dd651bcc7675"},
+    {file = "intel_openmp-2021.4.0-py2.py3-none-manylinux1_i686.whl", hash = "sha256:3b921236a38384e2016f0f3d65af6732cf2c12918087128a9163225451e776f2"},
+    {file = "intel_openmp-2021.4.0-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:e2240ab8d01472fed04f3544a878cda5da16c26232b7ea1b59132dbfb48b186e"},
+    {file = "intel_openmp-2021.4.0-py2.py3-none-win32.whl", hash = "sha256:6e863d8fd3d7e8ef389d52cf97a50fe2afe1a19247e8c0d168ce021546f96fc9"},
+    {file = "intel_openmp-2021.4.0-py2.py3-none-win_amd64.whl", hash = "sha256:eef4c8bcc8acefd7f5cd3b9384dbf73d59e2c99fc56545712ded913f43c4a94f"},
 ]
 
 [[package]]
@@ -549,21 +549,21 @@ python-dateutil = ">=2.7"
 
 [[package]]
 name = "mkl"
-version = "2023.1.0"
+version = "2021.4.0"
 description = "Intel® oneAPI Math Kernel Library"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "mkl-2023.1.0-py2.py3-none-macosx_10_15_x86_64.macosx_11_0_x86_64.whl", hash = "sha256:b17b6238f63c07856da5001f8eea87c9796990d37c699dd200e6aa570854aa1c"},
-    {file = "mkl-2023.1.0-py2.py3-none-manylinux1_i686.whl", hash = "sha256:3c84652cf6fa674c4b2f71b598e24d175d9bd9d60196d2990a18fb1b37099d8e"},
-    {file = "mkl-2023.1.0-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:7f1b499c4ade0be479efe8239769f3866342a91ce46d130db1a232632c5363dd"},
-    {file = "mkl-2023.1.0-py2.py3-none-win32.whl", hash = "sha256:2c0468f39395721d52e929c894983576adb51fa8df983b69c63dbfb38e3e1e57"},
-    {file = "mkl-2023.1.0-py2.py3-none-win_amd64.whl", hash = "sha256:271ff3f043f610aee798daa2073ce1e4ea8c1d00d71972da6a5e89fc8d935355"},
+    {file = "mkl-2021.4.0-py2.py3-none-macosx_10_15_x86_64.macosx_11_0_x86_64.whl", hash = "sha256:67460f5cd7e30e405b54d70d1ed3ca78118370b65f7327d495e9c8847705e2fb"},
+    {file = "mkl-2021.4.0-py2.py3-none-manylinux1_i686.whl", hash = "sha256:636d07d90e68ccc9630c654d47ce9fdeb036bb46e2b193b3a9ac8cfea683cce5"},
+    {file = "mkl-2021.4.0-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:398dbf2b0d12acaf54117a5210e8f191827f373d362d796091d161f610c1ebfb"},
+    {file = "mkl-2021.4.0-py2.py3-none-win32.whl", hash = "sha256:439c640b269a5668134e3dcbcea4350459c4a8bc46469669b2d67e07e3d330e8"},
+    {file = "mkl-2021.4.0-py2.py3-none-win_amd64.whl", hash = "sha256:ceef3cafce4c009dd25f65d7ad0d833a0fbadc3d8903991ec92351fe5de1e718"},
 ]
 
 [package.dependencies]
-intel-openmp = ">=2023.0.0,<2024.0.0"
+intel-openmp = ">=2021.0.0,<2022.0.0"
 tbb = ">=2021.0.0,<2022.0.0"
 
 [[package]]
@@ -1240,4 +1240,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8, <3.12"
-content-hash = "a2756be3d24ecf55628d21491ab77bb5137deaf7cd14b69e21fb11fd9c90dc5c"
+content-hash = "343d1110997eda46b3237416dd6298ad0eb7ef1076f6312ec9305ee5fae56dd7"
