@@ -207,6 +207,19 @@ def chunk_fill(row_snap, col_snap, dat_snap, shape, Nchunk=1e5, verbose=True):
     
     #row_snap, col_snap, dat_snap are snapshots of the csr data Awkward arrays
     
+    if Nchunk > len(row_snap):
+        row_dat = extract_indices( row_snap, 0, len(row_snap) )
+        col_dat = extract_indices( col_snap, 0, len(row_snap) )
+        input_dat = extract_indices( dat_snap, 0, len(row_snap) )
+        
+        W_tot = csc_matrix( ( input_dat , (row_dat, col_dat) ), shape=shape )
+        del row_dat, col_dat, input_dat        
+
+        W_input = W_tot.tocsr()
+        
+        return W_input
+
+    
     if verbose:
         for n in tqdm( range( len(row_snap)//Nchunk ) ):
 
