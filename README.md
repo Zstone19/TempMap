@@ -7,7 +7,7 @@ The repository is organized as follows:
 * `/Examples` - Example Jupyter notebooks detailing three use cases for the package (for both simulated and real data)
 * `/Paper` - Results from Stone & Shen (2023), including GIFs of fit spectra
 
-![Alt Text](./Paper/Disk_GIFs/Fig2_Disk_two-rings.gif)
+![Alt Text](./Paper/Disk_GIFs/Fig2_Disk_2rings.gif)
 
 ## The Algorithm
 Temperature perturbations generated within the accretion disks of AGN, near the supermassive black hole (SMBH), can generate changes in observed flux in the optical wavelengths. Assuming a Shakura-Sunayev thin disk (Shakura & Sunayev, 1973), axisyemmetric raduation, and a linear relationsship between perturbations in temperature $\delta T$ and flux $\delta F_\lambda$, flux variability can be derived from an integral of temperature perturbations over the entire disk. Doing this for multiple observed times $t_d$ produces a map of flux perturbations as a function of wavelength $\lambda$ and time. This process can be inverted to use input flux data to produce output temperature perturbation maps, in terms of radius and time. In addition, for large AGN, there is a time delay between emission at different points in the disk which could arrive at the same time. This "smearing effect" is also taken into account in the model.
