@@ -1,6 +1,6 @@
 # TempMap
 
-A package following Stone & Shen (2023) in using the method described in Neustadt & Kochanek (2022) (NK22) to form temperature perturbation maps for AGN accretion disks. The methodology is originally described in NK22, with small adjustments in Stone & Shen (2023). 
+A package following [Stone & Shen (2023)](https://ui.adsabs.harvard.edu/abs/2023MNRAS.524.4521S/abstract) in using the method described in Neustadt & Kochanek (2022) (NK22) to form temperature perturbation maps for AGN accretion disks. The methodology is originally described in NK22, with small adjustments in Stone & Shen (2023). 
 
 The repository is organized as follows:
 * `/src` - The python package
@@ -46,6 +46,8 @@ The sparse linear algebra solver [PyPardiso](https://github.com/haasad/PyPardiso
 
 ## Data and Contact
 [ArXiv](https://arxiv.org/abs/2210.07452)
+
+[MNRAS](https://academic.oup.com/mnras/article/524/3/4521/7221341)
 
 All data for the SDSS-RM sample used in this paper (including spectra and AGN paramaters), as well as all output temperature maps are located on [Zenodo](https://zenodo.org/record/7195997)
 
