@@ -429,7 +429,7 @@ def make_F_dF_nonlinear_arbitrary(input_dat, tp_vals, td_vals, lambda_vals,
             Tvals = T0_init + input_dat[:,td_ind]
             dT = input_dat[:,td_ind]
             
-        F0 = get_F0(alpha, MBH, lambda_vals[j], dist, inc)
+        F0 = get_F0(alpha, MBH, lambda_vals[i], dist, inc)
         
         F_vals = np.zeros(Nu)
         dF_vals = np.zeros(Nu)
