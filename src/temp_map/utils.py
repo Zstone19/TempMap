@@ -16,6 +16,9 @@ def get_temperature_profile(yvals, MBH, lambda_edd, alpha=6):
     bad_mask = ( 10**log_Tvals == 0. )
     log_Tvals[bad_mask] = log_Tin - .75*yvals[bad_mask] + .25*(  np.log(.5*yvals[bad_mask]*np.log(10))/np.log(10) - yvals[bad_mask]/4 + yvals[bad_mask]**2 * np.log(10)**3 / 96 )
 
+    bad_mask = ( 10**log_Tvals == 0. )
+    log_Tvals[bad_mask] = -300
+
     assert np.argwhere( 10**log_Tvals == 0. ).size == 0
     return 10**log_Tvals
 
